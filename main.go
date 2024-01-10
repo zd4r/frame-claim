@@ -89,6 +89,8 @@ func main() {
 	// progress bar
 	bar := progressbar.Default(int64(len(wallets)))
 
+	// fill table
+	var totalPoints int
 	for _, wallet := range wallets {
 		func() {
 			defer bar.Add(1)
@@ -121,6 +123,7 @@ func main() {
 			}
 
 			if authRespBody.UserInfo.HasClaimedPoints || authRespBody.UserInfo.TotalAllocation == 0 {
+				totalPoints += authRespBody.UserInfo.TotalAllocation
 				fmt.Fprintf(table,
 					"%s\t%s\t%d\t%v\t%s\t-\t\n",
 					wallet.Name,
@@ -161,6 +164,7 @@ func main() {
 				)
 				return
 			}
+			totalPoints += authRespBody.UserInfo.TotalAllocation
 
 			// add row
 			fmt.Fprintf(table,
@@ -177,6 +181,8 @@ func main() {
 	fmt.Println()
 
 	table.Flush()
+
+	fmt.Printf("total: %d\n", totalPoints)
 }
 
 func readPassphrase() ([]byte, error) {
